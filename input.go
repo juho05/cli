@@ -30,6 +30,23 @@ func Input(prompt string, validators ...Validator) (string, error) {
 	return result, err
 }
 
+// InputOptional ask the user to input a line of text. Not required.
+func InputOptional(prompt string, validators ...Validator) (string, error) {
+	opts := make([]survey.AskOpt, 0, len(validators))
+	for _, v := range validators {
+		opts = append(opts, survey.WithValidator(survey.Validator(v)))
+	}
+
+	var result string
+	err := survey.AskOne(&survey.Input{
+		Message: prompt,
+	}, &result, opts...)
+	if err == terminal.InterruptErr {
+		err = ErrCanceled
+	}
+	return result, err
+}
+
 // YesNo asks the user a yes/no question.
 func YesNo(question string, defaultValue bool) (yes bool, err error) {
 	err = survey.AskOne(&survey.Confirm{
