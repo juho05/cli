@@ -30,11 +30,13 @@ const (
 	WhiteBold   Color = "\x1b[1;37m"
 )
 
-var out = colorable.NewColorableStdout()
-var progressStart time.Time
-var progressMsg string
-var loadingTicker *time.Ticker
-var progressBarRunning bool
+var (
+	out                = colorable.NewColorableStdout()
+	progressStart      time.Time
+	progressMsg        string
+	loadingTicker      *time.Ticker
+	progressBarRunning bool
+)
 
 func BeginLoading(format string, a ...any) {
 	FinishLoading()
@@ -59,7 +61,7 @@ func BeginLoading(format string, a ...any) {
 
 func updateLoading(position int) {
 	symbols := []string{"|", "/", "-", "\\"}
-	fmt.Fprintf(out, "\r%s%s %s %ds%s", Cyan, symbols[position%4], progressMsg, int(time.Now().Sub(progressStart).Seconds()), Reset)
+	fmt.Fprintf(out, "\r%s%s %s %ds%s", Cyan, symbols[position%4], progressMsg, int(time.Since(progressStart).Seconds()), Reset)
 }
 
 func CancelLoading() {
@@ -78,7 +80,7 @@ func FinishLoading() {
 	loadingTicker.Stop()
 	loadingTicker = nil
 
-	totalDuration := time.Now().Sub(progressStart)
+	totalDuration := time.Since(progressStart)
 	var durationStr string
 	if int(totalDuration.Seconds()) == 0 {
 		durationStr = fmt.Sprintf("%dms", totalDuration.Milliseconds())
@@ -109,7 +111,7 @@ func UpdateProgressBar(progress float64) {
 			fmt.Fprintf(out, " ")
 		}
 	}
-	fmt.Fprintf(out, "] %d%% %ds%s", int(progress*100), int(time.Now().Sub(progressStart).Seconds()), Reset)
+	fmt.Fprintf(out, "] %d%% %ds%s", int(progress*100), int(time.Since(progressStart).Seconds()), Reset)
 }
 
 func CancelProgressBar() {
@@ -124,7 +126,7 @@ func FinishProgressBar() {
 		return
 	}
 	fmt.Fprintf(out, "\x1b[1F%s%s%s\n", Green, strings.TrimSuffix(progressMsg, "...")+"   ", Reset)
-	fmt.Fprintf(out, "%s[=================================] 100%% %ds%s\n", Green, int(time.Now().Sub(progressStart).Seconds()), Reset)
+	fmt.Fprintf(out, "%s[=================================] 100%% %ds%s\n", Green, int(time.Since(progressStart).Seconds()), Reset)
 	progressBarRunning = false
 }
 
@@ -148,9 +150,8 @@ func Warn(format string, a ...any) {
 	Print(string(Yellow)+"WARNING: "+string(Reset)+format, a...)
 }
 
-func Error(format string, a ...any) error {
+func Error(format string, a ...any) {
 	Print(string(RedBold)+"ERROR: "+string(Reset)+format, a...)
-	return fmt.Errorf(format, a...)
 }
 
 func Clear() {

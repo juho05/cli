@@ -7,10 +7,8 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
-var (
-	// ErrCanceled indicates that the user has interrupted the programm, e.g. by using Ctrl + C.
-	ErrCanceled = errors.New("Canceled.")
-)
+// ErrCanceled indicates that the user has interrupted the programm, e.g. by using Ctrl + C.
+var ErrCanceled = errors.New("canceled")
 
 // Input ask the user to input a line of text.
 func Input(prompt string, validators ...Validator) (string, error) {

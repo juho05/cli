@@ -21,7 +21,7 @@ func Regexp(regexp *regexp.Regexp, errorMsg string) Validator {
 	return func(input interface{}) error {
 		text, ok := input.(string)
 		if !ok {
-			return errors.New("Value must be a string")
+			return errors.New("value must be a string")
 		}
 		if !regexp.MatchString(text) {
 			return errors.New(errorMsg)
