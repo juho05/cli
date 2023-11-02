@@ -1,4 +1,4 @@
-module github.com/Bananenpro/cli
+module github.com/juho05/cli
 
 go 1.18
 
